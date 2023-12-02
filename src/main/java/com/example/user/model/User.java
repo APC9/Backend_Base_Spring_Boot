@@ -8,8 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
-
+@Data
 @Entity
 @Table(name = "users") // Nombre de la table, por defecto toma el nombre de la clase
 public class User {
