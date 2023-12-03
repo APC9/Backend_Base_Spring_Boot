@@ -26,3 +26,9 @@
 
   -  Crear la Inteface IUserService
   -  Crear la clase UserServiceImpl
+      -  getUsers
+      -  getUSerById
+      -  getUserByName
+      -  createUser
+      -  updateUser
+      -  deleteUSerById
