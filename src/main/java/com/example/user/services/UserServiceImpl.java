@@ -93,12 +93,19 @@ public class UserServiceImpl implements IUserService{
   }
 
   @Override
-  @Transactional
+  @Transactional( readOnly = false)
   public ResponseEntity<UserResponseRest> createUser(User user) {
     UserResponseRest response = new UserResponseRest();
     List<User> list = new ArrayList<>();
 
     try {
+
+       User existUserEmail = userDao.findByEmailAddress( user.getEmail() );
+
+      if( existUserEmail != null ) {
+        response.setMetadata("Response nok", "-1", "Exist user with email address");
+        return new ResponseEntity<UserResponseRest>( response, HttpStatus.BAD_REQUEST);
+      }
 
       User newUser = userDao.save(user);
 
