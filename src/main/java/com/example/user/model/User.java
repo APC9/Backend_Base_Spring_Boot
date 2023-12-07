@@ -23,17 +23,17 @@ public class User {
   public Long id;
 
   @Email( message = "Debe ser un email valido")
-  @Column( unique = true)
+  @Column( unique = true )
   public String email;
 
   @NotBlank( message = "This field is required")
   public String name;
   
-  @Length(min = 4, max = 10)
+  @Length(min = 4)
   @Pattern(
-    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
+    regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).*$",
     message = "La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial"
-  )
+  ) 
   public String password;
 
 

@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.user.dao.IUserDao;
+import com.example.user.model.UpdateUser;
 import com.example.user.model.User;
 import com.example.user.response.UserResponseRest;
 
@@ -58,7 +60,7 @@ public class UserServiceImpl implements IUserService{
 
       list.add(user.get());
       response.getUserResponse().setUsers(list);
-      response.setMetadata("Response ok", "00", "Category found");
+      response.setMetadata("Response ok", "00", "User found successfully");
 
     } catch (Exception e) {
       msgError(e, response, "getUSerById" );
@@ -93,7 +95,7 @@ public class UserServiceImpl implements IUserService{
   }
 
   @Override
-  @Transactional( readOnly = false)
+  @Transactional
   public ResponseEntity<UserResponseRest> createUser(User user) {
     UserResponseRest response = new UserResponseRest();
     List<User> list = new ArrayList<>();
@@ -107,7 +109,14 @@ public class UserServiceImpl implements IUserService{
         return new ResponseEntity<UserResponseRest>( response, HttpStatus.BAD_REQUEST);
       }
 
-      User newUser = userDao.save(user);
+      //Encriptacion de contraseña 
+      User userWithEncryptedPassword = user;
+      BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+      String  encryptedPassword =  passwordEncoder.encode( user.getPassword() );
+      userWithEncryptedPassword.setPassword(encryptedPassword);
+
+      //Guardar en BBDD
+      User newUser = userDao.save(userWithEncryptedPassword);
 
       if( newUser == null ) {
         response.setMetadata("Response nok", "-1", "User not found");
@@ -127,7 +136,7 @@ public class UserServiceImpl implements IUserService{
 
   @Override
   @Transactional
-  public ResponseEntity<UserResponseRest> updateUser(User user, Long id) {
+  public ResponseEntity<UserResponseRest> updateUser(UpdateUser user, Long id) {
     UserResponseRest response = new UserResponseRest();
     List<User> list = new ArrayList<>();
 
@@ -140,9 +149,16 @@ public class UserServiceImpl implements IUserService{
         return new ResponseEntity<UserResponseRest>( response, HttpStatus.NOT_FOUND);
       }
 
-      userById.get().setName( user.getName());
-      userById.get().setEmail( user.getEmail());
-      userById.get().setPassword( user.getPassword());
+      User existUserEmail = userDao.findByEmailAddress( user.getEmail() );
+
+      if( existUserEmail != null ) {
+        response.setMetadata("Response nok", "-1", "Exist user with email address");
+        return new ResponseEntity<UserResponseRest>( response, HttpStatus.BAD_REQUEST);
+      }
+
+      if (user.getName() != null )  userById.get().setName( user.getName());
+      if (user.getEmail() != null ) userById.get().setEmail( user.getEmail());
+
       User userToUpdate =  userDao.save( userById.get() );
 
       if( userToUpdate == null ){
