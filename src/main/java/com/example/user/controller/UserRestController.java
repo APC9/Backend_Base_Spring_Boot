@@ -36,6 +36,12 @@ public class UserRestController {
     ResponseEntity<UserResponseRest> response = userService.getUsers();
     return response;
   }
+
+  @GetMapping("/users/load")
+  public ResponseEntity<UserResponseRest> loadUsers(){
+    ResponseEntity<UserResponseRest> response = userService.loadUsers();
+    return response;
+  }
   
   /**
    * Get user by ID
@@ -72,7 +78,7 @@ public class UserRestController {
   }
   
   @PutMapping("/users/{id}")
-  private ResponseEntity<UserResponseRest> updateUser( @RequestBody UpdateUser user, @PathVariable Long id ){
+  private ResponseEntity<UserResponseRest> updateUser( @Valid @RequestBody UpdateUser user, @PathVariable Long id ){
     ResponseEntity<UserResponseRest> response = userService.updateUser(user, id);
     return response;
   }

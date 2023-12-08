@@ -36,5 +36,17 @@ public class User {
   ) 
   public String password;
 
+  public User() {
+  }
+
+  public User(@Email(message = "Debe ser un email valido") String email,
+      @NotBlank(message = "This field is required") String name,
+      @Length(min = 4) @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).*$", message = "La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial") String password) {
+    this.email = email;
+    this.name = name;
+    this.password = password;
+  }
+
+  
 
 }

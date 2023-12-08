@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.user.dao.IUserDao;
+import com.example.user.data.DataUser;
 import com.example.user.model.UpdateUser;
 import com.example.user.model.User;
 import com.example.user.response.UserResponseRest;
@@ -23,9 +24,35 @@ public class UserServiceImpl implements IUserService{
 
   @Autowired
   private IUserDao userDao;
+ 
+  private DataUser dataUser = new DataUser();
 
   // Errores en Consola
   private final Logger log = LoggerFactory.getLogger( UserServiceImpl.class );
+
+  @Override
+  @Transactional
+  public ResponseEntity<UserResponseRest> loadUsers() {
+    UserResponseRest response = new UserResponseRest();
+
+    try {
+      List<User> users = dataUser.getUsers();
+      users.forEach( (User user) -> { 
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String  encryptedPassword =  passwordEncoder.encode( user.getPassword() );
+        user.setPassword(encryptedPassword);
+        userDao.save(user); 
+      });
+
+      //response.getUserResponse().setUsers(users);
+      response.setMetadata("Response ok", "00", "Users successfully loaded");
+    } catch (Exception e) {
+      msgError(e, response, "getUsers" );
+    } 
+
+    return new ResponseEntity<UserResponseRest>( response, HttpStatus.OK );
+  }
 
   @Override
   @Transactional( readOnly = true)
