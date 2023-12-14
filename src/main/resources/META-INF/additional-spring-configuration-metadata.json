@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "apc91.openapi.dev-url",
+    "type": "java.lang.String",
+    "description": "A description for 'apc91.openapi.dev-url'"
+  },
+  {
+    "name": "apc91.openapi.prod-url",
+    "type": "java.lang.String",
+    "description": "A description for 'apc91.openapi.prod-url'"
+  }
+]}

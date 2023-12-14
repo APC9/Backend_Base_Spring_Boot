@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +24,9 @@ public class UserServiceImpl implements IUserService{
 
   @Autowired
   private IUserDao userDao;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
  
   private DataUser dataUser = new DataUser();
 
@@ -39,8 +42,7 @@ public class UserServiceImpl implements IUserService{
       List<User> users = dataUser.getUsers();
       users.forEach( (User user) -> { 
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String  encryptedPassword =  passwordEncoder.encode( user.getPassword() );
+        String  encryptedPassword =  this.passwordEncoder.encode( user.getPassword() );
         user.setPassword(encryptedPassword);
         userDao.save(user); 
       });
@@ -138,8 +140,7 @@ public class UserServiceImpl implements IUserService{
 
       //Encriptacion de contraseña 
       User userWithEncryptedPassword = user;
-      BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-      String  encryptedPassword =  passwordEncoder.encode( user.getPassword() );
+      String  encryptedPassword =  this.passwordEncoder.encode( user.getPassword() );
       userWithEncryptedPassword.setPassword(encryptedPassword);
 
       //Guardar en BBDD
@@ -185,6 +186,7 @@ public class UserServiceImpl implements IUserService{
 
       if (user.getName() != null )  userById.get().setName( user.getName());
       if (user.getEmail() != null ) userById.get().setEmail( user.getEmail());
+      if (user.getRole() != null ) userById.get().setRole( user.getRole());
 
       User userToUpdate =  userDao.save( userById.get() );
 
